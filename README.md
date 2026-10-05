@@ -1,3 +1,6 @@
+# Foreword
+Due to import issues of the used gitlab instance, this project was copy/pasted and is detached.
+
 # Agentic Discuss Data
 This repository holds the foundations to develop and integrate an agentic data analysis
 system for the [Discuss Data project](https://discuss-data.net/). It is based on the
