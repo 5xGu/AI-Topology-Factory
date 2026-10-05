@@ -1,0 +1,28 @@
+{
+  "urls": {
+    "base": "base/url/for/ai/models",
+    "docling": "docling/url/",
+    "ollama": "ollama/url/"
+  },
+  "paths": {
+    "data_root": "/path/to/your/data",
+    "llm_ready_data": "/path/to/LLMReadyData",
+    "flattened_data_dest": "/path/to/flattened_data",
+    "parsed_data": "/path/to/parsedData/",
+    "temp_archive": "/path/to/tempArchiveDir/",
+    "sub_data_root": "/path/to/subsetData/",
+    "log_dir": "/path/to/logging/",
+    "metrics": "/path/to/metrics",
+    "tokenization": "/path/to/tokenization",
+    "token_counts": {
+      "csv": "/path/to/CSVTokStats.json",
+      "json": "/path/to/JSONTokStats.json",
+      "report": "/path/to/dataset_token_distribution_report.csv"
+    }
+  },
+  "settings": {
+    "timeout": 30,
+    "max_retries": 3,
+    "log_level": "INFO"
+  }
+}

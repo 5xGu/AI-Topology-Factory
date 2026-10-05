@@ -1,0 +1,72 @@
+classDiagram
+  class agentlib {
+  }
+  class SupportedModels {
+  }
+  class agent_subgraph {
+  }
+  class aggregation {
+  }
+  class chunking {
+  }
+  class delegation {
+  }
+  class evaluators {
+  }
+  class file_io {
+  }
+  class graph {
+  }
+  class llm {
+  }
+  class mlflow_utils {
+  }
+  class nodes_agent {
+  }
+  class nodes_branch {
+  }
+  class nodes_extraction {
+  }
+  class nodes_factory {
+  }
+  class nodes_iterative {
+  }
+  class prompt_collection {
+  }
+  class prompts {
+  }
+  class rate_limit {
+  }
+  class registry {
+  }
+  class router {
+  }
+  class shared_methods {
+  }
+  class spawn {
+  }
+  class state {
+  }
+  class structuredOutputs {
+  }
+  class tokenization {
+  }
+  class tools {
+  }
+  class tools_csv {
+  }
+  class tools_json {
+  }
+  class tools_llm_extract {
+  }
+  class tools_md {
+  }
+  class topology {
+  }
+  agentlib --> agentlib
+  agentlib --> nodes_branch
+  agentlib --> prompt_collection
+  agentlib --> tools
+  agentlib --> tools_csv
+  agentlib --> tools_json
+  agentlib --> tools_md

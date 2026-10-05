@@ -1,0 +1,144 @@
+classDiagram
+  class AgentState {
+    agent_params : Optional[Dict[str, Any]]
+    aggregation_pipeline : Optional[List[str]]
+    branch_params : Optional[Dict[str, Any]]
+    chunk_index : Optional[int]
+    chunk_params : Optional[Dict[str, Any]]
+    chunks : Optional[List[str]]
+    critique : Optional[str]
+    depth : int
+    files_read : Optional[List[str]]
+    files_remaining : Optional[List[str]]
+    final_output : Optional[Any]
+    input : List[str]
+    iteration_count : int
+    iterative_params : Optional[Dict[str, Any]]
+    max_depth : int
+    messages : Annotated[List[AnyMessage], add_messages]
+    metadata_output : Optional[Dict[str, Any]]
+    mlflow_run_id : Optional[str]
+    model_params : Optional[Dict[str, Any]]
+    plan : Optional[List[Dict[str, Any]]]
+    prompt_overrides : Optional[Dict[str, Any]]
+    results : Annotated[List[Dict[str, Any]], operator.add]
+    route : Literal['direct', 'branch', 'spawn', 'agent', 'free']
+    route_confidence : float
+    route_reasoning : str
+    summary_output : Optional[str]
+    worker_tools : Optional[List[str]]
+  }
+  class ChunkPlan {
+    chunk_size_chars : Optional[int]
+    needs_chunking : bool
+    num_chunks : int
+  }
+  class EdgeSpec {
+    condition : Optional[str]
+    condition_targets : Optional[List[str]]
+    source : str
+    target : Optional[str]
+  }
+  class FileTokenCounts {
+    filename : Dict[str, int]
+  }
+  class IncrementalSynthesis {
+    notes : str
+    updated_metadata
+    updated_summary : str
+  }
+  class MetadataResponse {
+    Additional_Categories : Optional[List[Literal[CATEGORIES]]]
+    Countries : Optional[List[Literal['Armenia', 'Azerbaijan', 'Belarus', 'Estonia', 'GDR', 'Georgia', 'Kazakhstan', 'Kyrgyzstan', 'Latvia', 'Lithuania', 'Moldova', 'Other', 'Russia', 'Tajikistan', 'Turkmenistan', 'Ukraine', 'USSR', 'Uzbekistan']]]
+    Creator_type : Optional[Literal['Person', 'Institution']]
+    Creators : Optional[str]
+    Data_types : Optional[List[Literal['archival documents', 'audio', 'images', 'interviews', 'statistics', 'survey', 'text document', 'video', 'other']]]
+    Datatype_text : Optional[str]
+    Date_of_data_creation_text : Optional[str]
+    Date_period_of_data_creation_from : Optional[str]
+    Date_period_of_data_creation_to : Optional[str]
+    Disciplines : Optional[List[str]]
+    Funding : Optional[str]
+    Institutional_affiliation : Optional[str]
+    Keywords : Optional[List[str]]
+    Languages : Optional[List[str]]
+    Main_Category : Optional[Literal[CATEGORIES]]
+    Methods_of_data_analysis : Optional[List[str]]
+    Methods_of_data_collection : Optional[List[str]]
+    Publication_date : Optional[str]
+    Related_dataset : Optional[str]
+    Related_dataset_text : Optional[str]
+    Related_projects : Optional[List[str]]
+    Related_publications : Optional[str]
+    Sources_of_data : Optional[List[str]]
+    Subtitle : Optional[str]
+    Time_period_covered_in_data_collection_from : Optional[str]
+    Time_period_covered_in_data_collection_to : Optional[str]
+    Time_period_covered_text : Optional[str]
+    Title : Optional[str]
+  }
+  class ModelParams {
+    model : str
+    provider : str
+    temperature : float
+  }
+  class ModelTypes {
+    has_capabilities()*
+  }
+  class PlanItem {
+    task : str
+    tools : Optional[List[str]]
+  }
+  class PromptSpec {
+    instructions : Optional[str]
+    system_override : Optional[str]
+    template_name : Optional[str]
+    variables : Dict[str, Any]
+  }
+  class RateLimiter {
+    max_calls : int
+    window_s : float
+    acquire()
+  }
+  class ReflectionVerdict {
+    conflicts_detected : bool
+    reasoning : str
+    sufficient : bool
+  }
+  class RouterDecision {
+    agent_max_depth : Optional[int]
+    agent_tools : Optional[List[str]]
+    branch_nodes : Optional[List[Literal['read_file', 'md_schema', 'json_schema', 'csv_schema', 'markdown_from_json', 'llm_extractor']]]
+    branch_sequential : bool
+    confidence : float
+    plan : Optional[List[PlanItem]]
+    reasoning : str
+    route : Literal['direct', 'branch', 'spawn', 'agent']
+  }
+  class SummaryEval {
+    conciseness_score : int
+    coverage_score : int
+    divergence_examples : str
+    faithfulness_score : int
+    reasoning : str
+  }
+  class SupportedModels {
+    get_all_supported_models() List[str]
+    get_huggingface_tokenizer(model_name: str) str
+    get_special_tokenizer_kwargs()
+    is_supported(name: str) bool
+  }
+  class TokenCounts {
+    model_name : int
+  }
+  class TopologySpec {
+    edges : List[EdgeSpec]
+    entry : str
+    nodes : List[str]
+  }
+  class _RateLimitedWrapper {
+    bind_tools()
+    invoke()
+    with_structured_output()
+  }
+  IncrementalSynthesis --> MetadataResponse : updated_metadata

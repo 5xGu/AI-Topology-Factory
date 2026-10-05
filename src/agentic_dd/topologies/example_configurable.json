@@ -1,0 +1,5 @@
+{
+  "model_params": {
+    "summary_out_LLM": {"provider": "api", "model": "qwen3.8-27b", "temperature": 0.2}
+  }
+}

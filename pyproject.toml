@@ -1,0 +1,49 @@
+[project]
+name = "agentic-dd"
+version = "0.1.0"
+description = "Integration basis for AI suite into the Discuss Data project."
+readme = "README.md"
+authors = [
+    { name = "Tobias Plattner", email = "tobias.plattner@sub.uni-goettingen.de" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "langchain-core>=1.6.6",
+    "langchain-ollama>=1.1.0",
+    "langchain-openai>=1.6.6",
+    "langchain-text-splitters>=1.1.2",
+    "langgraph>=1.2.12",
+    "mlflow>=3.16.1",
+    "ollama>=0.6.3",
+    "pandas>=3.0.5",
+    "pydantic>=2.5,<3",
+    "pylint>=4.0.8",
+    "python-dotenv>=1.2.3",
+    "requests>=2.34.2",
+]
+
+[project.scripts]
+agentic-dd = "agentic_dd:main"
+
+[project.optional-dependencies]
+tokenizer = [
+    "transformers>=5.17.0",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.13,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.uv]
+package = true
+[tool.uv.build-backend]
+module-name = "agentic_dd"
+
+[dependency-groups]
+dev = [
+    "pylint>=4.0.8",
+    "pytest>=9.1.1",
+]
+
+
+

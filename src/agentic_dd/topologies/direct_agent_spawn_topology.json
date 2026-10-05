@@ -1,0 +1,99 @@
+{
+  "entry": "router",
+  "nodes": [
+    {
+      "name": "router",
+      "type": "router",
+      "params": {
+        "route": "free",
+        "allowed_routes": ["direct", "agent", "spawn"],
+        "fallback_route": "direct",
+        "model_params": {"provider": "api", "model": "qwen3.8-27b", "temperature": 0.0}
+      }
+    },
+    {"name": "read_file", "type": "read_file"},
+    {
+      "name": "chunk_split",
+      "type": "chunk_split",
+      "params": {"source_node": "read_file", "provider": "api", "model": "qwen3.8-27b"},
+      "reads": [{"node": "read_file", "mode": "last"}]
+    },
+    { 
+      "name": "chunk_summary_llm",
+      "type": "llm",
+      "params": {"prompt_spec": {"template_name": "summarizer_default"}},
+      "reads": []
+    },
+    {
+      "name": "chunk_metadata_llm",
+      "type": "llm",
+      "params": {
+        "prompt_spec": {"template_name": "metadata_extraction_expert"},
+        "structured_output": "MetadataResponse"
+      },
+      "reads": []
+    },
+    {
+      "name": "summary_out_LLM",
+      "type": "llm",
+      "params": {"prompt_spec": {"template_name": "summarizer_default"}, "text_source": "chunk_split"},
+      "reads": [{"node": "chunk_split", "mode": "last"}]
+    },
+    {
+      "name": "metadata_out_LLM",
+      "type": "llm",
+      "params": {
+        "prompt_spec": {"template_name": "metadata_extraction_expert"},
+        "structured_output": "MetadataResponse",
+        "text_source": "chunk_split"
+      },
+      "reads": [{"node": "chunk_split", "mode": "last"}]
+    },
+    {"name": "aggregator", "type": "aggregator"},
+    {
+      "name": "agent",
+      "type": "llm",
+      "params": {
+        "tools": ["read_file", "delegate"],
+        "prompt_spec": {"template_name": "agent_default"},
+        "model_params": {"provider": "api", "model": "qwen3.8-27b", "temperature": 0.0},
+        "max_depth": 2,
+        "recursion_limit": 50,
+        "selective_file_reading": true
+      }
+    },
+    {
+      "name": "worker",
+      "type": "llm",
+      "params": {
+        "tools": ["read_file"],
+        "prompt_spec": {"template_name": "worker_default"},
+        "model_params": {"provider": "api", "model": "qwen3.8-27b", "temperature": 0.0}
+      }
+    }
+  ],
+  "conditions": [
+    "route_decision",
+    "chunk_fanout_decision"
+  ],
+  "edges": [
+    {
+      "source": "router",
+      "condition": "route_decision",
+      "condition_targets": ["read_file", "agent", "worker"]
+    },
+    {"source": "read_file", "target": "chunk_split"},
+    {
+      "source": "chunk_split",
+      "condition": "chunk_fanout_decision",
+      "condition_targets": ["chunk_summary_llm", "chunk_metadata_llm", "summary_out_LLM", "metadata_out_LLM"]
+    },
+    {"source": "chunk_summary_llm", "target": "aggregator"},
+    {"source": "chunk_metadata_llm", "target": "aggregator"},
+    {"source": "summary_out_LLM", "target": "aggregator"},
+    {"source": "metadata_out_LLM", "target": "aggregator"},
+    {"source": "agent", "target": "aggregator"},
+    {"source": "worker", "target": "aggregator"},
+    {"source": "aggregator", "target": "END"}
+  ]
+}

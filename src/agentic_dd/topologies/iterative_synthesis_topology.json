@@ -1,0 +1,97 @@
+{
+  "entry": "file_triage",
+  "nodes": [
+    {
+      "name": "file_triage",
+      "type": "file_triage",
+      "params": {"ordering": "heuristic"},
+      "reads": []
+    },
+    {
+      "name": "read_next_source",
+      "type": "read_next_source",
+      "params": {"triage_node": "file_triage"},
+      "reads": [{"node": "file_triage", "mode": "last"}]
+    },
+    {
+      "name": "incremental_synthesis_llm",
+      "type": "incremental_synthesis",
+      "params": {
+        "read_node": "read_next_source",
+        "model_params": {"provider": "local", "model": "qwen2.5:7b", "temperature": 0.0},
+        "truncate_budget_fraction": 0.75
+      },
+      "reads": [{"node": "read_next_source", "mode": "last"}]
+    },
+    {
+      "name": "reflection_gate",
+      "type": "reflection_gate",
+      "params": {
+        "synthesis_node": "incremental_synthesis_llm",
+        "triage_node": "file_triage",
+        "read_node": "read_next_source",
+        "model_params": {"provider": "local", "model": "qwen2.5:7b", "temperature": 0.0}
+      },
+      "reads": [
+        {"node": "incremental_synthesis_llm", "mode": "last"},
+        {"node": "file_triage", "mode": "last"},
+        {"node": "read_next_source", "mode": "all"}
+      ]
+    },
+    {
+      "name": "finalize_incremental",
+      "type": "finalize_incremental",
+      "params": {
+        "synthesis_node": "incremental_synthesis_llm",
+        "triage_node": "file_triage",
+        "read_node": "read_next_source",
+        "reflection_node": "reflection_gate"
+      },
+      "writes": ["summary_out_LLM", "metadata_out_LLM"],
+      "reads": [
+        {"node": "incremental_synthesis_llm", "mode": "last"},
+        {"node": "file_triage", "mode": "last"},
+        {"node": "read_next_source", "mode": "all"},
+        {"node": "reflection_gate", "mode": "all"}
+      ]
+    },
+    {
+      "name": "aggregator",
+      "type": "aggregator",
+      "params": {"pipeline": ["extract_named_outputs"]},
+      "reads": [
+        {"node": "summary_out_LLM", "mode": "last"},
+        {"node": "metadata_out_LLM", "mode": "last"}
+      ]
+    }
+  ],
+  "conditions": [
+    {
+      "name": "iterative_revision_gate",
+      "type": "iterative_revision_gate",
+      "params": {
+        "max_iterations": 5,
+        "reflection_node": "reflection_gate",
+        "triage_node": "file_triage",
+        "read_node": "read_next_source"
+      },
+      "reads": [
+        {"node": "file_triage", "mode": "last"},
+        {"node": "read_next_source", "mode": "all"},
+        {"node": "reflection_gate", "mode": "all"}
+      ]
+    }
+  ],
+  "edges": [
+    {"source": "file_triage", "target": "read_next_source"},
+    {"source": "read_next_source", "target": "incremental_synthesis_llm"},
+    {"source": "incremental_synthesis_llm", "target": "reflection_gate"},
+    {
+      "source": "reflection_gate",
+      "condition": "iterative_revision_gate",
+      "condition_targets": ["read_next_source", "finalize_incremental"]
+    },
+    {"source": "finalize_incremental", "target": "aggregator"},
+    {"source": "aggregator", "target": "END"}
+  ]
+}
