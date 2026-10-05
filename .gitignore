@@ -1,0 +1,10 @@
+# secrets or general constants
+.env
+config.json
+
+*.log
+privateNotes.md
+
+__pycache__
+mlflow.db
+mlruns
