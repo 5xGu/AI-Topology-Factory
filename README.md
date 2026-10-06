@@ -1,5 +1,5 @@
 # Foreword
-Due to import issues of the used gitlab instance, this project was copy/pasted and is detached.
+Due to import issues of the used gitlab instance, this project was copy/pasted and is detached. I have developed this repository as a part of my student work before.
 
 # Agentic Discuss Data
 This repository holds the foundations to develop and integrate an agentic data analysis
